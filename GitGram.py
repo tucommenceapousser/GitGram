@@ -125,7 +125,7 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not msg:
         return
     await msg.reply_text(
-        f"*Getting Support*\n\nTo get support in using the bot, join [the GitGram support](https://t.me/trhacknonsBot).",
+        f"*Getting Support*\n\nTo get support in using the bot, join [the {PROJECT_NAME} support](https://t.me/trhacknonsBot).",
         parse_mode="markdown",
     )
 
