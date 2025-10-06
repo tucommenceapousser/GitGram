@@ -10,7 +10,7 @@ import os
 from html import escape
 from typing import Optional
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Markup
 import requests
 
 # telegram v20+
@@ -145,9 +145,74 @@ async def source(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 # --- Flask endpoints
+
 @server.route("/", methods=["GET"])
 def hello_world():
-    return "Hello, world!"
+    # Try to get bot username
+    try:
+        r = requests.get(TG_BOT_API + "getMe", timeout=5).json()
+        bot_username = r["result"]["username"] if r.get("ok") else "GitGramBot"
+    except Exception:
+        bot_username = "GitGramBot"
+
+    html = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>GitGram - {bot_username}</title>
+        <style>
+            body {{
+                background-color: #0d0d0d;
+                color: #00ff99;
+                font-family: 'Courier New', Courier, monospace;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                text-align: center;
+            }}
+            h1 {{
+                font-size: 3em;
+                margin-bottom: 0.2em;
+                text-shadow: 0 0 5px #00ff99, 0 0 10px #00ff99;
+                animation: glow 1.5s infinite alternate;
+            }}
+            h2 {{
+                font-size: 1.5em;
+                color: #ff00ff;
+                text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff;
+                margin-top: 0;
+            }}
+            p {{
+                font-size: 1.1em;
+                color: #00ffff;
+                max-width: 600px;
+            }}
+            @keyframes glow {{
+                from {{ text-shadow: 0 0 5px #00ff99, 0 0 10px #00ff99; }}
+                to {{ text-shadow: 0 0 20px #00ff99, 0 0 40px #00ff99; }}
+            }}
+            a {{
+                color: #ff0099;
+                text-decoration: none;
+            }}
+            a:hover {{
+                text-shadow: 0 0 10px #ff0099;
+            }}
+        </style>
+    </head>
+    <body>
+        <h1>{bot_username}</h1>
+        <h2>By trhacknon</h2>
+        <p>Welcome to GitGram! This bot notifies you about updates on your Git repositories via webhooks.</p>
+        <p>Check out the source code here: <a href="{GIT_REPO_URL}" target="_blank">{GIT_REPO_URL}</a></p>
+    </body>
+    </html>
+    """
+    return Markup(html)
 
 
 def _escape_text(s: str) -> str:
