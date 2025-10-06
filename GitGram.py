@@ -125,15 +125,15 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not msg:
         return
     await msg.reply_text(
-        "Support: https://t.me/trhacknonsBot",
-        parse_mode="Markdown",
+        f"*Getting Support*\n\nTo get support in using the bot, join [the GitGram support](https://t.me/trhacknonsBot).",
+        parse_mode="markdown",
     )
 
 async def source(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.effective_message or update.message
     if not msg:
         return
-    await msg.reply_text(f"Source: {GIT_REPO_URL}", parse_mode="Markdown")
+    await msg.reply_text(f"*Source*:\n[GitGram Repo]({GIT_REPO_URL}). ", parse_mode="Markdown")
 
 # --- HTML escape wrapper
 def _escape_text(s: str) -> str:
