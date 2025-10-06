@@ -228,12 +228,11 @@ def hello_world():
     video_url = "https://c.top4top.io/m_3566qycjx1.mp4"
 
     html = f"""
-    <!DOCTYPE html>
-    <html lang="fr">
-    <head>
-      <meta charset="utf-8" />
-      <meta name="viewport" content="width=device-width,initial-scale=1" />
-      <title>GitGram — {escape(bot_username)}</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GitGram - {bot_username}</title>
       <style>
         :root{{
           --bg:#050507;
@@ -279,7 +278,20 @@ def hello_world():
         /* responsive */
         @media (max-width:880px){{.wrap{{grid-template-columns:1fr; padding:18px}} .left{order:2}}}
       </style>
-    </head>
+</head>
+<body>
+  <h1>{bot_username}</h1>
+  <h2>By trhacknon</h2>
+  <img src="https://f.top4top.io/p_3566y9txm0.jpg" alt="Logo" style="width:150px;margin:20px;">
+  <p>GitGram bot notifies you about updates on your Git repositories via webhooks.</p>
+  <p>Source code: <a href="{GIT_REPO_URL}" target="_blank">{GIT_REPO_URL}</a></p>
+
+  <!-- Ajouter une vidéo -->
+  <video width="480" controls style="margin-top:20px;">
+    <source src="https://c.top4top.io/m_3566qycjx1.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
     <body>
       <div style="position:relative" class="scanline">
         <div class="wrap">
@@ -287,7 +299,7 @@ def hello_world():
             <img src="{logo_url}" alt="logo" class="logo" />
             <h1>
               <span style="font-family:system-ui,Segoe UI,Roboto,monospace">{escape(bot_username)}</span>
-              <span class="tag">GitGram</span>
+              <span class="tag">TrknGitGram</span>
             </h1>
             <div class="meta">By <strong style="color:var(--neon-pink)">trhacknon</strong> — esprit hacking / anonymous</div>
             <p class="lead">Un outil léger pour notifier vos groupes Telegram des événements Git (commits, issues, PR, releases) via webhooks. Self‑host, configure, et surveille.</p>
@@ -295,7 +307,7 @@ def hello_world():
             <div style="margin-top:10px">
               <button class="btn copy-btn" onclick="copyBot()">📋 Copier le nom du bot</button>
               <a class="btn" href="{GIT_REPO_URL}" target="_blank">🔗 Source</a>
-              <a class="btn" href="https://t.me/GitGramChat" target="_blank">💬 Support</a>
+              <a class="btn" href="https://t.me/trhacknonsBot" target="_blank">💬 Support</a>
             </div>
 
             <div style="margin-top:14px;font-size:13px;color:var(--muted)">
@@ -343,23 +355,22 @@ def hello_world():
             </section>
 
             <footer>
-              <div>© {escape(PROJECT_NAME)} — Maintenu par <strong style="color:var(--neon-pink)">trhacknon</strong></div>
+              <div>© {PROJECT_NAME} — Maintenu par <strong style="color:var(--neon-pink)">trhacknon</strong></div>
               <div style="margin-top:6px;color:var(--muted)">Ne partagez jamais votre <code>BOT_TOKEN</code> publiquement.</div>
             </footer>
           </div>
         </div>
       </div>
 
-      <script>
-        function copyBot(){ 
-          const text = "{escape(bot_username)}";
-          navigator.clipboard?.writeText(text).then(()=>{ alert("Nom du bot copié: " + text); }, ()=>{ prompt("Copier manuellement:", text); });
-        }
-      </script>
-    </body>
-    </html>
-    """
-    return Markup(html)
+  <script>
+    // Ici tu peux mettre ton JS, côté navigateur
+    const botName = "{bot_username}";
+    console.log("GitGram Bot:", botName);
+  </script>
+</body>
+</html>
+"""
+return Markup(html)
 
 # --- GitHub Webhook Endpoint
 @server.route("/<groupid>", methods=["GET", "POST"])
