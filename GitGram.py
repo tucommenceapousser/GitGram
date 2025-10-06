@@ -63,7 +63,6 @@ if not ENV and not ip_addr:
 TG_BOT_API = f"https://api.telegram.org/bot{BOT_TOKEN}/"
 
 def post_tg(chat: str, message: str, parse_mode: Optional[str] = None) -> dict:
-    """Send message via Telegram HTTP API."""
     params = {
         "chat_id": chat,
         "text": message,
@@ -78,7 +77,6 @@ def post_tg(chat: str, message: str, parse_mode: Optional[str] = None) -> dict:
         r.raise_for_status()
 
 def reply_tg(chat: str, message_id: int, message: str, parse_mode: Optional[str] = None) -> dict:
-    """Reply to a Telegram message id."""
     params = {
         "chat_id": chat,
         "reply_to_message_id": message_id,
@@ -99,11 +97,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not msg:
         return
     await msg.reply_text(
-        (
-            f"This is the Updates watcher for {PROJECT_NAME}. "
-            "I notify users about Git repository updates via webhooks.\n\n"
-            "You need to self-host or see /help to use this bot."
-        ),
+        f"This is the Updates watcher for {PROJECT_NAME}. I notify users about Git repository updates via webhooks.\n\n"
+        "Use /help to see available commands.",
         parse_mode="Markdown",
     )
 
@@ -112,12 +107,10 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not msg:
         return
     await msg.reply_text(
-        (
-            "*Available Commands*\n\n"
-            "`/connect` - Setup this chat to receive Git notifications.\n"
-            "`/support` - Get support links.\n"
-            "`/source` - Git repository URL."
-        ),
+        "*Available Commands*\n"
+        "`/connect` - Setup this chat to receive Git notifications.\n"
+        "`/support` - Get support links.\n"
+        "`/source` - Git repository URL.",
         parse_mode="Markdown",
     )
 
@@ -141,7 +134,6 @@ def _escape_text(s: str) -> str:
     return escape(s) if s else ""
 
 # --- Flask Endpoints
-
 @server.route("/", methods=["GET"])
 def hello_world():
     try:
@@ -214,14 +206,60 @@ def git_api(groupid):
     if not data:
         return f"<b>Add this URL:</b> {ip_addr}/{groupid} to your GitHub webhook"
 
-    # Handle webhook events...
-    # Commits, issues, pull requests, forks, releases, stars, pages, etc.
-    # Uses post_tg() to notify Telegram group
-    # Full logic similar to previous code
-    # For brevity, you can copy the detailed webhook handling from your previous final code.
-    return jsonify({"ok": True})
+    # --- Webhook event handling
+    # Commits
+    if data.get("commits"):
+        commits_text = ""
+        rng = min(len(data["commits"]), 10)
+        for x in range(rng):
+            commit = data["commits"][x]
+            msg_raw = commit.get("message", "")
+            commit_msg = _escape_text(msg_raw.split("\n")[0] if len(msg_raw) > 300 else msg_raw)
+            commits_text += f"{commit_msg}\n<a href='{commit['url']}'>{commit['id'][:7]}</a> - {_escape_text(commit['author']['name'])}\n\n"
+        text = f"✨ <b>{_escape_text(data['repository']['name'])}</b> - New {len(data['commits'])} commits\n{commits_text}"
+        if len(data["commits"]) > 10:
+            text += f"\n<i>And {len(data['commits']) - 10} other commits</i>"
+        return jsonify(post_tg(groupid, text, "HTML"))
 
-# --- del.dog fallback
+    # Issues and comments
+    if data.get("issue"):
+        if data.get("comment"):
+            text = f"💬 New comment: <b>{_escape_text(data['repository']['name'])}</b>\n{_escape_text(data['comment']['body'])}\n<a href='{data['comment']['html_url']}'>Issue #{data['issue']['number']}</a>"
+        else:
+            text = f"🚨 New {data.get('action', '')} issue for <b>{_escape_text(data['repository']['name'])}</b>\n<b>{_escape_text(data['issue']['title'])}</b>\n{_escape_text(data['issue']['body'])}\n<a href='{data['issue']['html_url']}'>Issue #{data['issue']['number']}</a>"
+        return jsonify(post_tg(groupid, text, "HTML"))
+
+    # Pull Requests
+    if data.get("pull_request"):
+        if data.get("comment"):
+            text = f"❗ New comment on PR: {_escape_text(data['comment']['body'])}\n<a href='{data['comment']['html_url']}'>Pull Request</a>"
+        else:
+            pr = data["pull_request"]
+            text = f"❗ New {data.get('action', '')} pull request for <b>{_escape_text(data['repository']['name'])}</b>\n<b>{_escape_text(pr.get('title',''))}</b> ({pr.get('state','')})\n{_escape_text(pr.get('body',''))}\n<a href='{pr['html_url']}'>Pull Request #{pr.get('number','')}</a>"
+        return jsonify(post_tg(groupid, text, "HTML"))
+
+    # Forks
+    if data.get("forkee"):
+        text = f"🍴 <a href='{data['sender']['html_url']}'>{_escape_text(data['sender']['login'])}</a> forked <a href='{data['repository']['html_url']}'>{_escape_text(data['repository']['name'])}</a>! Total forks: {data['repository'].get('forks_count', 0)}"
+        return jsonify(post_tg(groupid, text, "HTML"))
+
+    # Releases and stars
+    if data.get("action") and data.get("release") or data.get("action") in ["published","started","edited"]:
+        action = data.get("action")
+        if action == "published":
+            text = f"<a href='{data['sender']['html_url']}'>{_escape_text(data['sender']['login'])}</a> published release <b>{_escape_text(data['release'].get('name',''))}</b> ({_escape_text(data['release'].get('tag_name',''))})\n<a href='{data['release'].get('tarball_url','')}'>Tar</a> | <a href='{data['release'].get('zipball_url','')}'>Zip</a>"
+        elif action == "started":
+            text = f"🌟 <a href='{data['sender']['html_url']}'>{_escape_text(data['sender']['login'])}</a> starred <a href='{data['repository']['html_url']}'>{_escape_text(data['repository']['name'])}</a>! Total stars: {data['repository'].get('stargazers_count',0)}"
+        else:
+            text = f"<a href='{data['sender']['html_url']}'>{_escape_text(data['sender']['login'])}</a> {action} release <b>{_escape_text(data['release'].get('name',''))}</b>"
+        return jsonify(post_tg(groupid, text, "HTML"))
+
+    # Fallback: unknown event
+    url = deldog(data)
+    fallback_text = f"🚫 Unknown webhook event received.\nDebug: {url}"
+    return jsonify(post_tg(groupid, fallback_text, "Markdown"))
+
+# --- del.dog helper
 def deldog(data) -> str:
     BASE_URL = "https://del.dog"
     try:
@@ -231,18 +269,15 @@ def deldog(data) -> str:
     except Exception as e:
         log.exception("Failed to upload to del.dog")
         return f"Failed to upload to del.dog: {e}"
-    key = res.get("key", "")
-    if res.get("isUrl"):
-        return f"{BASE_URL}/{key}"
-    return f"{BASE_URL}/{key}"
+    key = res.get("key","")
+    return f"{BASE_URL}/{key}" if key else f"{BASE_URL}/"
 
-# --- Start bot in background thread
+# --- Bot thread
 def start_bot_in_thread():
     if not BOT_TOKEN:
         log.error("BOT_TOKEN is not set. Exiting bot start.")
         return
 
-    # Check token
     try:
         r = requests.get(TG_BOT_API + "getMe", timeout=10).json()
         if not r.get("ok"):
@@ -251,7 +286,7 @@ def start_bot_in_thread():
         username = r["result"]["username"]
         log.info(f"[INFO] Logged in as @{username}, starting bot...")
     except Exception:
-        log.exception("Failed to contact Telegram API (getMe).")
+        log.exception("Failed to contact Telegram API")
 
     app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
@@ -261,9 +296,7 @@ def start_bot_in_thread():
     app.run_polling(stop_signals=None)
 
 if __name__ == "__main__":
-    # Start bot
     t = threading.Thread(target=start_bot_in_thread, daemon=True)
     t.start()
-
     port = int(os.environ.get("PORT", 8080))
     server.run(host="0.0.0.0", port=port)
