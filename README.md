@@ -12,6 +12,13 @@ If you want to deploy this app on Heroku, there's a one-click setup for that. Cl
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/tucommenceapousser/GitGram)
 
+## Déploiement en 1‑clic sur Render
+
+Cliquez sur le bouton ci‑dessous pour déployer cette application sur Render.  
+Vous pourrez configurer `BOT_TOKEN`, `PROJECT_NAME` et autres variables d'environnement via l'interface Render.
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/tucommenceapousser/GitGram)
+
 ## Try on Gitpod:
 1. [Login to Gitpod](https://gitpod.io/login).
 2. [Open this repo in Gitpod](https://gitpod.io/#github.com/tucommenceapousser/GitGram).
