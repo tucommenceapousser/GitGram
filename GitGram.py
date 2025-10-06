@@ -6,7 +6,6 @@ from html import escape
 from requests import get, post
 from os import environ
 import config
-import jinja
 
 from telegram.ext import CommandHandler, Updater
 
