@@ -120,6 +120,13 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     await msg.reply_text(help_text, parse_mode="Markdown")
+
+async def vid_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    msg = update.effective_message or update.message
+    if not msg:
+        return
+
+    video_url = "https://c.top4top.io/m_3566qycjx1.mp4"
     await msg.reply_video(video_url, caption="🎬 Tutoriel GitGram - by trhacknon")
     
 async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -299,6 +306,7 @@ def start_bot_in_thread():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_cmd))
+    app.add_handler(CommandHandler("vid", vid_cmd))
     app.add_handler(CommandHandler("support", support))
     app.add_handler(CommandHandler("source", source))
     app.run_polling(stop_signals=None)
