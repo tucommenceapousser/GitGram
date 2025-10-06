@@ -108,7 +108,7 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     help_text = (
-        "😈 *GitGram Bot - Help Menu*\n"
+        "😈 *TrknGitGram Bot - Help Menu*\n"
         "🙈🙉🙊 Maintained by *trhacknon*\n\n"
         "💡 *Available Commands:*\n"
         "🔗 `/connect` - Setup this chat to receive Git repository notifications.\n"
