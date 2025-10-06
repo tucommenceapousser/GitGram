@@ -157,58 +157,139 @@ def hello_world():
     except Exception:
         bot_username = "GitGramBot"
 
+    # Assets fournis
+    logo_url = "https://f.top4top.io/p_3566y9txm0.jpg"
+    video_url = "https://c.top4top.io/m_3566qycjx1.mp4"
+
     html = f"""
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="fr">
     <head>
-        <meta charset="UTF-8">
-        <title>GitGram - {bot_username}</title>
-        <style>
-            body {{
-                background-color: #0d0d0d;
-                color: #00ff99;
-                font-family: 'Courier New', monospace;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                margin: 0;
-                text-align: center;
-            }}
-            h1 {{
-                font-size: 3em;
-                text-shadow: 0 0 10px #00ff99, 0 0 20px #00ff99;
-                animation: glow 1.5s infinite alternate;
-            }}
-            h2 {{
-                font-size: 1.5em;
-                color: #ff00ff;
-                text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
-            }}
-            p {{
-                font-size: 1.1em;
-                color: #00ffff;
-                max-width: 600px;
-            }}
-            a {{
-                color: #ff0099;
-                text-decoration: none;
-            }}
-            a:hover {{
-                text-shadow: 0 0 15px #ff0099;
-            }}
-            @keyframes glow {{
-                from {{ text-shadow: 0 0 5px #00ff99, 0 0 10px #00ff99; }}
-                to {{ text-shadow: 0 0 20px #00ff99, 0 0 40px #00ff99; }}
-            }}
-        </style>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
+      <title>GitGram — {escape(bot_username)}</title>
+      <style>
+        :root{{
+          --bg:#050507;
+          --panel:#0b0b0d;
+          --neon-green:#00ff99;
+          --neon-pink:#ff00dd;
+          --cyan:#00ffff;
+          --muted:#9aa3a1;
+        }}
+        html,body{{height:100%;margin:0;background:linear-gradient(180deg,#020203 0%, #071018 100%);font-family:Inter, "Courier New", monospace;color:var(--neon-green);}}
+        .wrap{{max-width:1100px;margin:40px auto;padding:28px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow: 0 8px 40px rgba(0,0,0,0.7);border:1px solid rgba(0,255,153,0.06);display:grid;grid-template-columns:320px 1fr;gap:24px;align-items:start}}
+        .left{{padding:18px;border-radius:10px;background:linear-gradient(90deg, rgba(0,0,0,0.25), rgba(255,255,255,0.02));backdrop-filter: blur(4px);}}
+        .logo{{width:100%;border-radius:8px;border:2px solid rgba(255,0,153,0.06);box-shadow:0 6px 20px rgba(0,255,153,0.06) inset;}}
+        h1{{
+          font-size:28px;margin:12px 0 4px;color:var(--neon-green);text-shadow:0 0 10px rgba(0,255,153,0.12), 0 0 24px rgba(0,255,153,0.06);
+          display:flex;gap:10px;align-items:center;justify-content:flex-start;
+        }}
+        .tag{{font-size:14px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);color:var(--muted);border:1px solid rgba(255,255,255,0.02)}}
+        p.lead{{color:var(--cyan);margin:8px 0 14px;line-height:1.4}}
+        .btn{{display:inline-block;padding:10px 14px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--neon-pink);text-decoration:none;font-weight:600;cursor:pointer;box-shadow:0 6px 30px rgba(255,0,153,0.02)}}
+        .copy-btn{{margin-left:8px;padding:6px 10px;font-size:13px}}
+        .meta{{font-size:13px;color:var(--muted);margin-top:8px}}
+        .right{{padding:18px;border-radius:10px; background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(0,0,0,0.2));}}
+        section.card{{
+          background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+          border-radius:10px;padding:14px;margin-bottom:14px;border:1px solid rgba(0,255,153,0.03)
+        }}
+        h3{{margin:0 0 8px;color:var(--neon-pink);text-shadow:0 0 6px rgba(255,0,221,0.04)}}
+        ul{{padding-left:18px;margin:6px 0;color:var(--muted)}}
+        code{{background:rgba(0,0,0,0.25);padding:4px 6px;border-radius:6px;color:var(--cyan)}}
+
+        /* video */
+        .video-wrap{{display:flex;flex-direction:column;gap:8px;align-items:center}}
+        video{{width:100%;max-width:640px;border-radius:10px;box-shadow:0 12px 48px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.02)}}
+
+        /* footer */
+        footer{{text-align:center;margin-top:18px;color:var(--muted);font-size:13px}}
+
+        /* subtle animated scanline */
+        .scanline::after{content:"";position:absolute;left:0;right:0;top:0;height:100%;background:linear-gradient(0deg, transparent, rgba(0,255,153,0.02), transparent);pointer-events:none;mix-blend-mode:overlay;animation:scan 6s linear infinite}
+        @keyframes scan{{0%{{transform:translateY(-100%)}}100%{{transform:translateY(100%)}}}}
+
+        /* responsive */
+        @media (max-width:880px){{.wrap{{grid-template-columns:1fr; padding:18px}} .left{order:2}}}
+      </style>
     </head>
     <body>
-        <h1>{bot_username}</h1>
-        <h2>By trhacknon</h2>
-        <p>GitGram bot notifies you about updates on your Git repositories via webhooks.</p>
-        <p>Source code: <a href="{GIT_REPO_URL}" target="_blank">{GIT_REPO_URL}</a></p>
+      <div style="position:relative" class="scanline">
+        <div class="wrap">
+          <div class="left">
+            <img src="{logo_url}" alt="logo" class="logo" />
+            <h1>
+              <span style="font-family:system-ui,Segoe UI,Roboto,monospace">{escape(bot_username)}</span>
+              <span class="tag">GitGram</span>
+            </h1>
+            <div class="meta">By <strong style="color:var(--neon-pink)">trhacknon</strong> — esprit hacking / anonymous</div>
+            <p class="lead">Un outil léger pour notifier vos groupes Telegram des événements Git (commits, issues, PR, releases) via webhooks. Self‑host, configure, et surveille.</p>
+
+            <div style="margin-top:10px">
+              <button class="btn copy-btn" onclick="copyBot()">📋 Copier le nom du bot</button>
+              <a class="btn" href="{GIT_REPO_URL}" target="_blank">🔗 Source</a>
+              <a class="btn" href="https://t.me/GitGramChat" target="_blank">💬 Support</a>
+            </div>
+
+            <div style="margin-top:14px;font-size:13px;color:var(--muted)">
+              <div>Token: <code>env:BOT_TOKEN</code></div>
+              <div style="margin-top:6px">Example webhook URL:</div>
+              <div style="font-size:13px;color:var(--cyan)"> <code>{escape(ip_addr or 'https://your.domain')}/&lt;chat_id&gt;</code> </div>
+            </div>
+          </div>
+
+          <div class="right">
+            <section class="card">
+              <h3>À propos</h3>
+              <p style="color:var(--muted);margin:6px 0 0">
+                GitGram relaie automatiquement les activités GitHub/GitLab vers Telegram. Idéal pour les équipes, channels et pour garder un œil sur les dépôts. Conçu par <strong>trhacknon</strong>.
+              </p>
+            </section>
+
+            <section class="card">
+              <h3>Fonctionnalités</h3>
+              <ul>
+                <li>🔔 Notifications pour commits, issues, PR, releases</li>
+                <li>🛡️ Self‑host & privacy friendly</li>
+                <li>⚡ Simple à configurer (webhook → /&lt;chat_id&gt;)</li>
+                <li>🎛️ Compatible avec Telegram bots modernes (async)</li>
+              </ul>
+            </section>
+
+            <section class="card video-wrap">
+              <h3>Vidéo d'installation</h3>
+              <video controls poster="{logo_url}">
+                <source src="{video_url}" type="video/mp4">
+                Ton navigateur ne supporte pas la balise vidéo. Voici le lien direct : <a href="{video_url}" target="_blank">Voir la vidéo</a>
+              </video>
+              <div style="color:var(--muted);font-size:13px;margin-top:8px">Tutoriel rapide pour déployer et configurer (par trhacknon)</div>
+            </section>
+
+            <section class="card">
+              <h3>Commandes utiles</h3>
+              <ul>
+                <li><code>/start</code> — Démarrer le bot</li>
+                <li><code>/help</code> — Menu d'aide (incl. tutoriel vidéo)</li>
+                <li><code>/support</code> — Lien support & tutoriel</li>
+                <li><code>/source</code> — Lien vers le repo</li>
+              </ul>
+            </section>
+
+            <footer>
+              <div>© {escape(PROJECT_NAME)} — Maintenu par <strong style="color:var(--neon-pink)">trhacknon</strong></div>
+              <div style="margin-top:6px;color:var(--muted)">Ne partagez jamais votre <code>BOT_TOKEN</code> publiquement.</div>
+            </footer>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        function copyBot(){ 
+          const text = "{escape(bot_username)}";
+          navigator.clipboard?.writeText(text).then(()=>{ alert("Nom du bot copié: " + text); }, ()=>{ prompt("Copier manuellement:", text); });
+        }
+      </script>
     </body>
     </html>
     """
