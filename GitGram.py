@@ -13,9 +13,11 @@ from typing import Optional
 
 from flask import Flask, request, jsonify, Markup
 import requests
+import tempfile
+
 
 # telegram v20+
-from telegram import Update
+from telegram import Update, InputFile
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
@@ -23,6 +25,7 @@ from telegram.ext import (
 )
 
 # --- Logging
+MAX_UPLOAD_BYTES = 50 * 1024 * 1024  # ~50 MB
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
@@ -121,14 +124,77 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await msg.reply_text(help_text, parse_mode="Markdown")
 
+
 async def vid_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.effective_message or update.message
     if not msg:
         return
 
     video_url = "https://c.top4top.io/m_3566qycjx1.mp4"
-    await msg.reply_video(video_url, caption="🎬 Tutoriel GitGram - by trhacknon")
-    
+    caption = "🎬 Tutoriel GitGram - by trhacknon"
+
+    # 1) Essayer d'envoyer directement l'URL (Telegram se charge de récupérer le fichier)
+    try:
+        await msg.reply_video(video_url, caption=caption, timeout=120)
+        return
+    except Exception as e:
+        log.warning("reply_video(video_url) a échoué, fallback. Erreur: %s", e)
+
+    # 2) Envoyer d'abord un message avec le lien (fallback simple, toujours utile)
+    try:
+        await msg.reply_text(f"Impossible d'envoyer la vidéo directement. Voici le lien :\n{video_url}")
+    except Exception:
+        # ignore
+        pass
+
+    # 3) Tenter de télécharger la vidéo côté bot si elle n'est pas trop grosse, puis l'envoyer
+    try:
+        # HEAD pour obtenir content-length si disponible
+        head = requests.head(video_url, allow_redirects=True, timeout=10)
+        content_length = int(head.headers.get("content-length", 0))
+    except Exception:
+        content_length = 0
+
+    if content_length and content_length > MAX_UPLOAD_BYTES:
+        await msg.reply_text("La vidéo dépasse la taille maximale autorisée pour l'upload via le bot. Utilisez un hébergement (YouTube/CDN) et envoyez le lien.")
+        return
+
+    # Si la taille est inconnue, on peut tenter le téléchargement mais avec précaution
+    try:
+        tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
+        tmp_path = tmp.name
+        tmp.close()
+
+        with requests.get(video_url, stream=True, timeout=60) as r:
+            r.raise_for_status()
+            total = 0
+            with open(tmp_path, "wb") as f:
+                for chunk in r.iter_content(chunk_size=1024*1024):
+                    if not chunk:
+                        continue
+                    f.write(chunk)
+                    total += len(chunk)
+                    if total > MAX_UPLOAD_BYTES:
+                        raise RuntimeError("Fichier trop volumineux pendant le téléchargement")
+
+        # envoyer le fichier téléchargé
+        try:
+            await msg.reply_video(InputFile(tmp_path), caption=caption, timeout=120)
+            return
+        finally:
+            # cleanup
+            try:
+                os.remove(tmp_path)
+            except Exception:
+                pass
+
+    except Exception as e:
+        log.exception("Échec du téléchargement/envoi local de la vidéo: %s", e)
+        try:
+            await msg.reply_text(f"Impossible d'envoyer la vidéo (erreur: {e}). Voici le lien direct :\n{video_url}")
+        except Exception:
+            pass
+            
 async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.effective_message or update.message
     if not msg:
