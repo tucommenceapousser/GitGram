@@ -179,7 +179,7 @@ async def vid_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         # envoyer le fichier téléchargé
         try:
-            await msg.reply_video(InputFile(tmp_path), caption=caption, timeout=120)
+            await msg.reply_video(InputFile(tmp_path), caption=caption)
             return
         finally:
             # cleanup
