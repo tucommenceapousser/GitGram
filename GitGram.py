@@ -135,7 +135,7 @@ async def vid_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # 1) Essayer d'envoyer directement l'URL (Telegram se charge de récupérer le fichier)
     try:
-        await msg.reply_video(video_url, caption=caption, timeout=120)
+        await msg.reply_video(video_url, caption=caption)
         return
     except Exception as e:
         log.warning("reply_video(video_url) a échoué, fallback. Erreur: %s", e)
