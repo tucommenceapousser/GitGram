@@ -370,7 +370,7 @@ def hello_world():
 </body>
 </html>
 """
-return Markup(html)
+    return Markup(html)
 
 # --- GitHub Webhook Endpoint
 @server.route("/<groupid>", methods=["GET", "POST"])
