@@ -106,13 +106,19 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.effective_message or update.message
     if not msg:
         return
-    await msg.reply_text(
-        "*Available Commands*\n"
-        "`/connect` - Setup this chat to receive Git notifications.\n"
-        "`/support` - Get support links.\n"
-        "`/source` - Git repository URL.",
-        parse_mode="Markdown",
+
+    help_text = (
+        "😈 *GitGram Bot - Help Menu*\n"
+        "🙈🙉🙊 Maintained by *trhacknon*\n\n"
+        "💡 *Available Commands:*\n"
+        "🔗 `/connect` - Setup this chat to receive Git repository notifications.\n"
+        "🛠️ `/support` - Get support links if you get stuck.\n"
+        "📂 `/source` - Get the Git repository URL.\n\n"
+        "⚡ _Tip: Self-host the bot to receive notifications in your groups._\n\n"
+        "🚀 Enjoy tracking your Git updates like a hacker!"
     )
+
+    await msg.reply_text(help_text, parse_mode="Markdown")
 
 async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.effective_message or update.message
