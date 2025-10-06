@@ -268,6 +268,9 @@ footer{{text-align:center;margin-top:18px;color:var(--muted);font-size:13px}}
     <section class="card">
       <h3>À propos</h3>
       <p style="color:var(--muted)">GitGram relaie automatiquement les activités GitHub/GitLab vers Telegram. Idéal pour les équipes, channels et pour garder un œil sur les dépôts. Conçu par <strong>trhacknon</strong>.</p>
+      <a href="https://render.com/deploy?repo=https://github.com/tucommenceapousser/GitGram">
+  <img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render"/>
+</a>
     </section>
     <section class="card video-wrap">
       <h3>Vidéo d'installation</h3>
