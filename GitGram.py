@@ -30,25 +30,25 @@ log = logging.getLogger(__name__)
 ENV = bool(os.environ.get("ENV", False))
 if ENV:
     BOT_TOKEN = os.environ.get("BOT_TOKEN")
-    PROJECT_NAME = os.environ.get("PROJECT_NAME", "GitGram")
+    PROJECT_NAME = os.environ.get("PROJECT_NAME", "TrknGitGram")
     ip_addr = os.environ.get("APP_URL", None)
     GIT_REPO_URL = os.environ.get(
-        "GIT_REPO_URL", "https://github.com/MadeByThePinsHub/GitGram"
+        "GIT_REPO_URL", "https://github.com/tucommenceapousser/GitGram"
     )
 else:
     try:
         import config  # type: ignore
         BOT_TOKEN = getattr(config, "BOT_TOKEN", None)
-        PROJECT_NAME = getattr(config, "PROJECT_NAME", "GitGram")
+        PROJECT_NAME = getattr(config, "PROJECT_NAME", "TrknGitGram")
         ip_addr = None
         GIT_REPO_URL = getattr(
-            config, "GIT_REPO_URL", "https://github.com/MadeByThePinsHub/GitGram"
+            config, "GIT_REPO_URL", "https://github.com/tucommenceapousser/GitGram"
         )
     except Exception:
         BOT_TOKEN = None
-        PROJECT_NAME = "GitGram"
+        PROJECT_NAME = "TrknGitGram"
         ip_addr = None
-        GIT_REPO_URL = "https://github.com/MadeByThePinsHub/GitGram"
+        GIT_REPO_URL = "https://github.com/tucommenceapousser/GitGram"
 
 server = Flask(__name__)
 
@@ -119,7 +119,7 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not msg:
         return
     await msg.reply_text(
-        "Support: https://t.me/GitGramChat",
+        "Support: https://t.me/trhacknonsBot",
         parse_mode="Markdown",
     )
 
