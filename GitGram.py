@@ -106,7 +106,7 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.effective_message or update.message
     if not msg:
         return
-
+    video_file = InputFile("https://c.top4top.io/m_3566qycjx1.mp4")
     help_text = (
         "😈 *TrknGitGram Bot - Help Menu*\n"
         "🙈🙉🙊 Maintained by *trhacknon*\n\n"
@@ -119,6 +119,7 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     await msg.reply_text(help_text, parse_mode="Markdown")
+    await msg.reply_video(video_file, caption="Tutoriel GitGram - by trhacknon")
 
 async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.effective_message or update.message
